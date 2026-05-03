@@ -1120,10 +1120,10 @@ button,a{-webkit-tap-highlight-color:transparent}
       <div class="cart-summary-row total"><span>الإجمالي التقديري</span><span class="amt" id="sumTotal">0 ج.م</span></div>
     </div>
     <div class="cart-actions">
-      <a class="cart-wa-btn" id="cartWABtn" href="#" target="_blank" rel="noopener">
+      <button type="button" class="cart-wa-btn" id="cartWABtn">
         <svg viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M19.11 17.205c-.372 0-1.088 1.39-1.518 1.39a.63.63 0 0 1-.315-.1c-.802-.402-1.504-.817-2.163-1.447-.545-.516-1.146-1.29-1.46-1.963a.426.426 0 0 1-.073-.215c0-.33.99-.945.99-1.49 0-.143-.73-2.09-.832-2.335-.143-.372-.214-.487-.6-.487-.187 0-.36-.043-.53-.043-.302 0-.53.115-.746.315-.688.645-1.032 1.318-1.06 2.264v.114c-.015.99.472 1.977 1.017 2.78 1.23 1.82 2.506 3.41 4.554 4.34.616.287 2.035.888 2.722.888.817 0 2.15-.515 2.48-1.318.114-.257.157-.515.157-.787 0-.228-.057-.643-.242-.768-.57-.4-1.66-.79-2.435-.79zM16.46 4.92c-6.306 0-11.442 5.135-11.442 11.44 0 1.963.515 3.897 1.503 5.59l-1.504 5.373 5.53-1.476a11.39 11.39 0 0 0 5.92 1.63c6.306 0 11.42-5.135 11.42-11.44 0-6.306-5.114-11.44-11.42-11.44z"/></svg>
         <span>إرسال الطلب عبر واتساب</span>
-      </a>
+      </button>
       <button class="cart-clear-btn" id="cartClearBtn" type="button">مسح الكل</button>
     </div>
   </div>
@@ -1320,8 +1320,8 @@ button,a{-webkit-tap-highlight-color:transparent}
    CONFIG
    ═══════════════════════════════════════════════ */
 const CONFIG = {
-  WA_NUMBER: '201000800346',
-  WA_NUMBER_DISPLAY: '01000800346',
+  WA_NUMBER: '201019388501',
+  WA_NUMBER_DISPLAY: '01019388501',
   BRAND_NAME: 'محمد نور لزيوت السيارات',
   BRAND_LOCATION: 'شربين · الدلتا',
   CURRENCY: 'ج.م',
@@ -1335,7 +1335,7 @@ const CONFIG = {
   // ⚠️ غيّر القيم دي بعد إنشاء البوت — تعليمات في README
   TELEGRAM_BOT_TOKEN: '8157024231:AAGSKTskkl62YGs8y3oLOlnOmizjnF5v2A8',
   TELEGRAM_CHAT_ID: '7420016672',
-  TELEGRAM_ENABLED: true,
+  TELEGRAM_ENABLED: true,  // ✅ إشعارات تليجرام مُفعَّلة
   TRACK_ORDERS: true,
   ORDERS_STORAGE_KEY: 'mn_orders_log_v1',
   // Volume-based discount tiers (applied at cart based on subtotal)
@@ -1707,7 +1707,7 @@ const RenderModule = (() => {
       <button type="button" class="share-btn" data-action="share" data-id="${product.id}" aria-label="مشاركة المنتج" title="مشاركة">
         <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
       </button>
-      <button type="button" class="cart-btn ${inCart ? 'in-cart' : ''}" data-action="cart" data-id="${product.id}" onclick="(function(btn){var id=${product.id};var added=CartModule.toggle(id);btn.classList.toggle('in-cart',added);btn.textContent=added?'✓':'+';var card=btn.closest('.pcard');if(card)card.classList.toggle('in-cart',added);var fab=document.getElementById('fabCart');var cnt=document.getElementById('fabCartCount');var n=CartModule.size();if(fab)fab.classList.toggle('visible',n>0);if(cnt)cnt.textContent=n;})(this);event.stopPropagation();" aria-label="${inCart ? 'إزالة من السلة' : 'أضف إلى السلة'}" title="${inCart ? 'في السلة — انقر للحذف' : 'أضف إلى السلة'}">
+      <button type="button" class="cart-btn ${inCart ? 'in-cart' : ''}" data-action="cart" data-id="${product.id}" aria-label="${inCart ? 'في السلة' : 'أضف إلى السلة'}" title="${inCart ? '✓ في السلة — انقر لمراجعة الكمية' : 'أضف إلى السلة'}">
         ${inCart ? '✓' : '+'}
       </button>
       <a class="wa-btn" href="${waHref}" target="_blank" rel="noopener" data-action="order" data-id="${product.id}" aria-label="اطلب عبر واتساب">
@@ -1763,7 +1763,7 @@ const RenderModule = (() => {
     if (btn) {
       btn.classList.toggle('in-cart', inCart);
       btn.textContent = inCart ? '✓' : '+';
-      btn.setAttribute('aria-label', inCart ? 'إزالة من السلة' : 'أضف إلى السلة');
+      btn.setAttribute('aria-label', inCart ? 'في السلة' : 'أضف إلى السلة');
       btn.setAttribute('title', inCart ? 'في السلة — انقر للحذف' : 'أضف إلى السلة');
     }
   }
@@ -1870,7 +1870,7 @@ const CartUI = (() => {
     els.foot.style.display = 'block';
     // update WA link
     const totals = { itemsCount, totalQty, totalPrice };
-    els.waBtn.href = WAModule.cartLink(items, totals);
+    // waBtn is now a <button> — href handled in click listener
   }
 
   function refreshFab() {
@@ -1899,6 +1899,7 @@ const CartUI = (() => {
     els.body.addEventListener('click', (e) => {
       const btn = e.target.closest('[data-action]');
       if (!btn) return;
+      e.stopPropagation();
       const id = parseInt(btn.getAttribute('data-id'), 10);
       const act = btn.getAttribute('data-action');
       if (act === 'inc') CartModule.inc(id);
@@ -2423,7 +2424,7 @@ const BundlesModule = (() => {
     return { originalTotal: Math.round(total), items };
   }
 
-  function fmt(n) { return n.toLocaleString('ar-EG', { maximumFractionDigits: 0 }); }
+  function fmt(n) { return (n != null ? Number(n) : 0).toLocaleString('ar-EG', { maximumFractionDigits: 0 }); }
   function escapeHTML(s) {
     return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   }
@@ -3227,7 +3228,7 @@ const TrackingUI = (() => {
    ═══════════════════════════════════════════════ */
 const OrderFire = (() => {
   async function fire(orderType, waUrl, payload) {
-    const orderNumber = OrderTrackingModule.generateOrderNumber();
+const orderNumber = OrderTrackingModule.generateOrderNumber();
     payload.orderNumber = orderNumber;
     payload.orderType = orderType;
 
@@ -3245,7 +3246,10 @@ const OrderFire = (() => {
     // 2) Show order confirmation (always)
     TrackingUI.showOrderConfirm(orderNumber);
 
-    // 3) Send Telegram (background, non-blocking)
+    // 3) Open WhatsApp immediately (must be in direct user-event call stack)
+    window.open(waUrl, '_blank', 'noopener');
+
+    // 4) Send Telegram (background, non-blocking)
     if (TelegramModule.isConfigured()) {
       TrackingUI.showStatus('جاري إرسال الإشعار...', '');
       const tgMessage = OrderTrackingModule.buildTelegramMessage(orderType, payload);
@@ -3254,9 +3258,6 @@ const OrderFire = (() => {
         else TrackingUI.hideStatus();
       });
     }
-
-    // 4) Open WhatsApp after small delay (let TG start)
-    setTimeout(() => { window.open(waUrl, '_blank', 'noopener'); }, 200);
 
     return orderNumber;
   }
@@ -3384,10 +3385,21 @@ const App = (() => {
   function handleCartToggle(productId) {
     const product = ALL.find(p => p.id === productId);
     if (!product) return;
-    const added = CartModule.toggle(productId);
+    // إصلاح UX: زر بطاقة المنتج لا يحذف، بل يزيد الكمية أو يفتح السلة
+    const existing = CartModule.list().find(it => it.id === productId);
+    if (existing) {
+      // المنتج بالفعل في السلة → افتح السلة بدلاً من الحذف
+      if (typeof CartUI !== 'undefined' && CartUI.open) {
+        CartUI.open();
+        showToast('🛒 المنتج بالفعل في السلة — راجع كميتك', 'info');
+      } else {
+        showToast('✅ المنتج بالفعل في السلة', 'info');
+      }
+      return;
+    }
+    CartModule.add(product.id, 1);
     RenderModule.refreshCardCartState(productId);
-    if (added) showToast(`🛒 أُضيف: ${product.name.slice(0, 40)}${product.name.length > 40 ? '…' : ''}`, 'success');
-    else showToast('🗑️ تم الحذف من السلة');
+    showToast(`🛒 أُضيف: ${product.name.slice(0, 40)}${product.name.length > 40 ? '…' : ''}`, 'success');
   }
 
   function bindEvents() {
@@ -3563,9 +3575,9 @@ const App = (() => {
 
     WelcomeModal.init();
     ProfileBadge.render();
-    BundlesModule.render(ALL);
-    ReorderModule.render();
-    ReferralUI.renderIncomingBanner();
+    try { BundlesModule.render(ALL); } catch(e) { console.warn('[Bundles] render error:', e); }
+    try { ReorderModule.render(); } catch(e) { console.warn('[Reorder] render error:', e); }
+    try { ReferralUI.renderIncomingBanner(); } catch(e) { console.warn('[Referral] render error:', e); }
 
     // Render category tabs
     CategoriesModule.render(ALL, state.category, (catId) => {
@@ -3655,7 +3667,6 @@ const App = (() => {
     const cartWA = document.getElementById('cartWABtn');
     if (cartWA) {
       cartWA.addEventListener('click', (e) => {
-        e.preventDefault();
         const items = CartModule.list();
         if (!items.length) return;
         const subtotal = CartModule.totalPrice();
@@ -3822,15 +3833,18 @@ const DataLoader = (() => {
 // SMART BOOT (data first, then app init)
 // ═══════════════════════════════════════════════
 async function bootApp() {
+  let initialized = false;
   try {
     const products = await DataLoader.load();
-    // Override RAW_DATA with loaded products
     window.__LOADED_DATA = products;
     App.init();
+    initialized = true;
   } catch (err) {
     console.error('[Boot] Failed:', err);
-    // Last resort: use embedded
-    App.init();
+    if (!initialized) {
+      // Last resort: use embedded data
+      App.init();
+    }
   }
 }
 
